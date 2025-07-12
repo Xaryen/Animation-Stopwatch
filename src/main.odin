@@ -36,6 +36,8 @@ g_current_time_frames: int
 g_time_since_last:     int
 g_accumulated_time:    int
 
+
+g_time          := f64(0)
 g_24fps_time    := f64(0)
 FRAMETIME_24FPS :: f64(1.0/24)
 
@@ -169,11 +171,13 @@ update :: proc() {
 	total_time := rl.GetTime()
 	next_24fps_frame := false
 
-	// log.debug(FRAMETIME_24FPS)
+	g_time += f64(rl.GetFrameTime())
 
-	if total_time > (g_24fps_time + FRAMETIME_24FPS) {
-		g_24fps_time = total_time
+	if (g_time >= FRAMETIME_24FPS) {
 		next_24fps_frame = true
+		g_time -= FRAMETIME_24FPS
+	} else {
+		next_24fps_frame = false
 	}
 
 	if g_paused {
@@ -302,13 +306,19 @@ update :: proc() {
 		if g_debug_mode {
 			rl.GuiLabel(
 				{cursor.x, cursor.y, BUTTON_SIZE.x, BUTTON_SIZE.y},
-				"Debug info:",
+				fmt.ctprintf("Debug info: frame %v : %0.3f", g_current_time_frames, f32(g_current_time_frames)/24),
 			)
 			cursor.y += pad.y + BUTTON_SIZE.y
 
 			rl.GuiLabel(
 				{cursor.x, cursor.y, BUTTON_SIZE.x, BUTTON_SIZE.y},
-				fmt.ctprintf("24fps: %.4f", g_24fps_time),
+				fmt.ctprintf("time: %.4f", g_time),
+			)
+			cursor.y += pad.y + BUTTON_SIZE.y
+
+			rl.GuiLabel(
+				{cursor.x, cursor.y, BUTTON_SIZE.x, BUTTON_SIZE.y},
+				fmt.ctprintf("rl time: %.4f", total_time),
 			)
 			cursor.y += pad.y + BUTTON_SIZE.y
 
