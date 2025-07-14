@@ -9,12 +9,6 @@ import "core:c"
 
 _ :: log
 
-Anim_Time :: struct {
-	minutes: f32,
-	seconds: f32,
-	frames:  f32,
-}
-
 BG_COL :: rl.Color{30, 30, 30, 255}
 
 WIDTH  :: 600
@@ -52,7 +46,7 @@ g_lang := Language(.ENG)
 	input:
 		start - stop - reset button
 		get current time button
-
+		TODO:
 		(new) custom start time textbox
 */
 
@@ -101,6 +95,8 @@ get_curr_time :: proc() {
 	g_accumulated_time = g_current_time_frames
 }
 
+
+// web-safe keyboard handling since rl.IsKeyPressed doesn't work
 Keyboard_Key :: enum {
 	SPACE,
 	ENTER,
@@ -108,12 +104,8 @@ Keyboard_Key :: enum {
 	P,
 	A,S,D,W,
 }
-
-
 Keyboard_Keys :: bit_set[Keyboard_Key; u32]
- 
 g_keys_down: Keyboard_Keys
-
 key_pressed_safe :: proc(key: Keyboard_Key) -> bool {
 
 	context.allocator = context.temp_allocator
@@ -363,7 +355,6 @@ update :: proc() {
 	if g_debug_mode {
 		if key_pressed_safe(.W) {
 			g_time_rate += 1
-	
 		}
 
 		if key_pressed_safe(.S) {
